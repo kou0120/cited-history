@@ -97,22 +97,25 @@ function EmbedContent() {
   }
 
   return (
-    <div
-      className="bg-white"
-      style={renderMode ? { width: 800, height: 630 } : { width: '100vw', height: '100vh' }}
-    >
-       <div className="w-full h-full">
+    <div className="flex min-h-screen w-screen items-center justify-center bg-white p-4">
+      <div
+        className="bg-white w-full"
+        style={renderMode 
+          ? { width: '800px', height: '630px' } 
+          : { maxWidth: '800px' }
+        }
+      >
         <CitationChart 
             data={data}
             logScale={logScale}
             alignTimeline={alignTimeline}
             cumulative={cumulative}
             legendPosition={legendPosition}
-            height={renderMode ? 630 : undefined}
+            height={renderMode ? 630 : 500}
             frame={!renderMode}
             animation={!renderMode}
         />
-       </div>
+      </div>
     </div>
   );
 }

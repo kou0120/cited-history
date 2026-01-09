@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { CitationChart } from '@/components/CitationChart';
 import { PaperData } from '@/lib/openalex';
-import { Loader2, Link as LinkIcon } from 'lucide-react';
+import { Loader2, Link as LinkIcon, Code, Share2 } from 'lucide-react';
 
 const DEFAULT_JSON = `[
   {
@@ -70,20 +70,48 @@ export default function Home() {
     }
   };
 
+  const getBaseParams = () => {
+    const params = new URLSearchParams();
+    params.set('data', btoa(jsonInput));
+    params.set('log', logScale.toString());
+    params.set('align', alignTimeline.toString());
+    params.set('cum', cumulative.toString());
+    params.set('legend', legendPosition);
+    return params;
+  };
+
   const getOgImageUrl = () => {
     if (typeof window === 'undefined') return '';
     try {
-      const params = new URLSearchParams();
-      params.set('data', btoa(jsonInput));
-      params.set('log', logScale.toString());
-      params.set('align', alignTimeline.toString());
-      params.set('cum', cumulative.toString());
-      params.set('legend', legendPosition);
-      
-      return `${window.location.origin}/api/render?${params.toString()}`;
+      return `${window.location.origin}/api/render?${getBaseParams().toString()}`;
     } catch (e) {
       return '';
     }
+  };
+
+  const getEmbedUrl = () => {
+    if (typeof window === 'undefined') return '';
+    try {
+      return `${window.location.origin}/embed?${getBaseParams().toString()}`;
+    } catch (e) {
+      return '';
+    }
+  };
+
+  const getShareUrl = () => {
+    if (typeof window === 'undefined') return '';
+    try {
+      // Use the home page with query params if we want to support deep linking in the future
+      // For now, let's point to the embed page as it's the direct view
+      return `${window.location.origin}/embed?${getBaseParams().toString()}`;
+    } catch (e) {
+      return '';
+    }
+  };
+
+  const getIframeCode = () => {
+    const url = getEmbedUrl();
+    return `<iframe src="${url}" width="100%" height="500px" frameborder="0"></iframe>`;
   };
 
   return (
@@ -205,29 +233,80 @@ export default function Home() {
               )}
             </div>
 
-             {data.length > 0 && (
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Image URL</h3>
-                <div className="flex gap-2">
-                  <input 
-                    readOnly
-                    value={getOgImageUrl()}
-                    className="flex-1 p-2 text-sm border border-gray-300 rounded bg-gray-50 text-gray-900"
-                    onClick={(e) => e.currentTarget.select()}
-                  />
-                  <a 
-                    href={getOgImageUrl()} 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-sm font-medium"
-                  >
-                    <LinkIcon className="w-4 h-4 mr-2" />
-                    Open
-                  </a>
+            {data.length > 0 && (
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-6">
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-gray-900 flex items-center">
+                    <LinkIcon className="w-5 h-5 mr-2 text-blue-500" />
+                    Share Link
+                  </h3>
+                  <div className="flex gap-2">
+                    <input 
+                      readOnly
+                      value={getShareUrl()}
+                      className="flex-1 p-2 text-sm border border-gray-300 rounded bg-gray-50 text-gray-900"
+                      onClick={(e) => e.currentTarget.select()}
+                    />
+                    <a 
+                      href={getShareUrl()} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-sm font-medium"
+                    >
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Open
+                    </a>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Direct link to view this chart.
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Use this URL to embed the chart image in other applications.
-                </p>
+
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-gray-900 flex items-center">
+                    <Code className="w-5 h-5 mr-2 text-green-500" />
+                    Embed Code (iframe)
+                  </h3>
+                  <div className="flex gap-2">
+                    <textarea 
+                      readOnly
+                      rows={2}
+                      value={getIframeCode()}
+                      className="flex-1 p-2 text-sm border border-gray-300 rounded bg-gray-50 text-gray-900 font-mono"
+                      onClick={(e) => e.currentTarget.select()}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Copy this code to embed the interactive chart in your website or markdown.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-gray-900 flex items-center">
+                    <LinkIcon className="w-5 h-5 mr-2 text-purple-500" />
+                    Static Image URL
+                  </h3>
+                  <div className="flex gap-2">
+                    <input 
+                      readOnly
+                      value={getOgImageUrl()}
+                      className="flex-1 p-2 text-sm border border-gray-300 rounded bg-gray-50 text-gray-900"
+                      onClick={(e) => e.currentTarget.select()}
+                    />
+                    <a 
+                      href={getOgImageUrl()} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-sm font-medium"
+                    >
+                      <LinkIcon className="w-4 h-4 mr-2" />
+                      View PNG
+                    </a>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 text-red-400">
+                    Note: Server-side rendering may be unstable on some hosting environments.
+                  </p>
+                </div>
               </div>
             )}
           </div>

@@ -21,7 +21,7 @@ interface CitationChartProps {
   alignTimeline: boolean;
   cumulative: boolean;
   legendPosition: 'top' | 'bottom' | 'left' | 'right';
-  height?: number;
+  height?: number | string;
   frame?: boolean;
   animation?: boolean;
 }
