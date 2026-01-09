@@ -9,12 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@sparticuz/chromium": "^119.0.2",
+    "@sparticuz/chromium": "^123.0.1",
     "clsx": "^2.1.1",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
-    "playwright-core": "^1.57.0",
+    "playwright-core": "^1.43.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "recharts": "^3.6.0",

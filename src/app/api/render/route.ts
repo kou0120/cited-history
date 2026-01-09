@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     const executablePath = await chromium_sparticuz.executablePath();
 
     browser = await chromium.launch({
-      args: chromium_sparticuz.args,
+      args: [...chromium_sparticuz.args, '--disable-gpu'],
       executablePath,
       headless: chromium_sparticuz.headless === true,
     });
