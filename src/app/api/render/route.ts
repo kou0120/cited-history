@@ -1,4 +1,5 @@
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-core';
+import chromium_sparticuz from '@sparticuz/chromium';
 
 export const runtime = 'nodejs';
 
@@ -17,8 +18,12 @@ export async function GET(request: Request) {
 
   let browser: any;
   try {
+    const executablePath = await chromium_sparticuz.executablePath();
+
     browser = await chromium.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: chromium_sparticuz.args,
+      executablePath,
+      headless: chromium_sparticuz.headless === true,
     });
 
     const page = await browser.newPage({

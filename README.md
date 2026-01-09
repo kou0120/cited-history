@@ -2,9 +2,6 @@
 
 A web app that visualizes citation history trends for papers using the OpenAlex API.
 
-Project layout:
-- `web/`: Next.js app (App Router)
-
 ## Features
 - Input JSON with `paper_label` and `doi`
 - Fetch each paper’s `counts_by_year` from OpenAlex and plot line charts (Recharts)
@@ -15,8 +12,10 @@ Project layout:
   - `legend`: legend position
 - Return static images via URL: `/api/render` (server-side headless Chromium screenshot for maximum fidelity with the interactive chart)
 
+## Demo
+[Live Demo on Netlify](https://cited-history-demo.netlify.app/)
+
 ## Local development (non-Docker)
-In the `web/` directory:
 ```bash
 npm install
 npx playwright install --with-deps chromium

@@ -1,35 +1,43 @@
-# root
-.DS_Store
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# logs
-*.log
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env
+# env files (can opt-in for committing if needed)
 .env*
 
-# node / next (root if ever used)
-node_modules/
-.next/
-out/
-
-# app lives under web/
-web/node_modules/
-web/.next/
-web/out/
-web/build/
-web/.env*
-
-# playwright artifacts
-web/playwright-report/
-web/test-results/
-web/.cache/ms-playwright/
-
 # vercel
-.vercel/
+.vercel
 
-# misc
+# typescript
 *.tsbuildinfo
+next-env.d.ts
+
+.netlify
