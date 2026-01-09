@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useCallback } from 'react';
 import {
   LineChart,
   Line,
@@ -11,6 +11,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { toPng } from 'html-to-image';
+import { Download } from 'lucide-react';
 import { PaperData } from '@/lib/openalex';
 
 interface CitationChartProps {
@@ -29,6 +31,29 @@ const COLORS = [
 ];
 
 export function CitationChart({ data, logScale, alignTimeline, cumulative, legendPosition, height = 500, frame = true, animation = true }: CitationChartProps) {
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  const downloadImage = useCallback(() => {
+    if (chartRef.current === null) {
+      return;
+    }
+
+    toPng(chartRef.current, { 
+      backgroundColor: '#ffffff', 
+      cacheBust: true,
+      skipFonts: true, // Fix "font is undefined" error by skipping font embedding
+    })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = `citation-history-${new Date().getTime()}.png`;
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.error('oops, something went wrong!', err);
+      });
+  }, [chartRef]);
+
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return [];
 
@@ -118,44 +143,57 @@ export function CitationChart({ data, logScale, alignTimeline, cumulative, legen
   }, [data, alignTimeline, cumulative]);
 
   return (
-    <div
-      className={
-        (frame === false
-          ? 'w-full bg-white'
-          : 'w-full border border-gray-200 rounded-lg p-4 bg-white')
-      }
-      style={{ height }}
-    >
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={chartData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis scale={logScale ? 'log' : 'auto'} domain={logScale ? ['auto', 'auto'] : [0, 'auto']} allowDataOverflow={logScale} />
-          <Tooltip />
-          <Legend verticalAlign={legendPosition === 'top' || legendPosition === 'bottom' ? legendPosition : 'middle'} 
-                  align={legendPosition === 'left' ? 'left' : legendPosition === 'right' ? 'right' : 'center'}
-                  layout={legendPosition === 'left' || legendPosition === 'right' ? 'vertical' : 'horizontal'}
-          />
-          {data.map((paper, index) => (
-            <Line
-              key={paper.paper_label}
-              type="monotone"
-              dataKey={paper.paper_label}
-              stroke={COLORS[index % COLORS.length]}
-              activeDot={{ r: 8 }}
-              isAnimationActive={animation}
+    <div className="relative group">
+      <div
+        ref={chartRef}
+        className={
+          (frame === false
+            ? 'w-full bg-white'
+            : 'w-full border border-gray-200 rounded-lg p-4 bg-white')
+        }
+        style={{ height }}
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={chartData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis scale={logScale ? 'log' : 'auto'} domain={logScale ? ['auto', 'auto'] : [0, 'auto']} allowDataOverflow={logScale} />
+            <Tooltip />
+            <Legend verticalAlign={legendPosition === 'top' || legendPosition === 'bottom' ? legendPosition : 'middle'} 
+                    align={legendPosition === 'left' ? 'left' : legendPosition === 'right' ? 'right' : 'center'}
+                    layout={legendPosition === 'left' || legendPosition === 'right' ? 'vertical' : 'horizontal'}
             />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
+            {data.map((paper, index) => (
+              <Line
+                key={paper.paper_label}
+                type="monotone"
+                dataKey={paper.paper_label}
+                stroke={COLORS[index % COLORS.length]}
+                activeDot={{ r: 8 }}
+                isAnimationActive={animation}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      
+      {frame !== false && (
+        <button
+          onClick={downloadImage}
+          className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-white border border-gray-200 rounded-md shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-600 hover:text-blue-600"
+          title="Save as Image"
+        >
+          <Download size={18} />
+        </button>
+      )}
     </div>
   );
 }

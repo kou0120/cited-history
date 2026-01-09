@@ -2,6 +2,8 @@
 
 A web app that visualizes citation history trends for papers using the OpenAlex API.
 
+[![Windsurf](https://img.shields.io/badge/Windsurf-0B100F?logo=windsurf&logoColor=fff)](#)[![Netlify Status](https://api.netlify.com/api/v1/badges/b2923020-7fdc-45d4-be07-01f7d375ae1d/deploy-status)](https://app.netlify.com/projects/cited-history-demo/deploys)
+
 ## Features
 - Input JSON with `paper_label` and `doi`
 - Fetch each paper’s `counts_by_year` from OpenAlex and plot line charts (Recharts)
